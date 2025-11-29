@@ -1,0 +1,65 @@
+#include <DFRobot_MAX30102.h> 
+DFRobot_MAX30102particleSensor; 
+#define BLYNK_PRINT Serial 
+#defineBLYNK_TEMPLATE_ID"TMPL37XtRR_aO" 
+#defineBLYNK_TEMPLATE_NAME"max30102" 
+#define BLYNK_AUTH_TOKEN "AEmU5BIs9iiKuziZaJkVwhyRSn8Yw7GN" 
+#include <ESP8266WiFi.h> 
+#include<BlynkSimpleEsp8266.h> 
+//You should getAuth Token in the Blynk App. 
+//Got the Project Settings (nut icon). 
+Char auth[]="AEmU5BIs9iiKuziZaJkVwhyRSn8Yw7GN"; 
+//Your WiFi credentials. 
+//Set password to""for open networks.  
+char ssid[] = "Iot2024"; 
+charpass[]="testing2024";  
+void setup() 
+{ 
+// Debug console 
+Serial.begin(9600); 
+Blynk.begin(auth, ssid, pass); 
+while (!particleSensor.begin()) 
+{ 
+Serial.println("MAX30102wasnotfound"); 
+delay(1000); 
+} 
+particleSensor.sensorConfiguration( 
+/ledBrightness=/50, 
+/sampleAverage=/SAMPLEAVG_4, 
+/ledMode=/MODE_MULTILED,  
+/sampleRate=/SAMPLERATE_100, \ 
+/pulseWidth=/PULSEWIDTH_411,
+/adcRange=/ADCRANGE_16384); 
+} 
+int32_tSPO2; 
+//SPO2int8_tSPO2Valid; 
+//Flag to display if SPO2 calculation is valid 
+ int32_t heartRate;  
+//Heart-rate  
+int8_t heartRateValid;  
+//Flag to display if heart-rate calculation is valid 
+void loop( ) 
+{ 
+Serial.println(F("Wait about four seconds"));  
+particleSensor.heartrateAndOxygenSaturation( 
+/*SPO2=/&SPO2, 
+/*SPO2Valid=/&SPO2Valid, 
+/*heartRate=/&heartRate, 
+/*heartRateValid=/&heartRateValid); 
+//Print result 
+Serial.print(F("heartRate=")); 
+Serial.print(heartRate, DEC); 
+Serial.print(F(", heartRateValid=")); 
+Serial.print(heartRateValid, DEC); 
+Serial.print(F(";SPO2=")); 
+Serial.print(SPO2, DEC);  
+int a= heartRate; 
+int b= SPO2; 
+Blynk.virtualWrite(V0, a); 
+Blynk.virtualWrite(V1,b);  
+if(a<=60&&a>=50) 
+{ 
+Blynk.logEvent("testing"); 
+} 
+Blynk.run(); 
+} 
